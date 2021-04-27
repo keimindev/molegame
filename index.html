@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>두더지 잡기 게임</title>
+  <script>
+    //두더지(요소)를 만들고 초기화 하는 함수 
+    function makeMoles(nx, ny){
+      //map은 객체에 요소의 상태를 기록합니다. 요소 객체의 키 값
+      var molesState = new Map();
+      var W = 50, SPACE = 10;
+      for(var i=0; i<nx; i++){
+        for(var j=0; j<nx; j++){
+          var element = document.createElement("div");
+    
+          element.style.width = W + "px";
+          element.style.height = W + "px";
+          element.style.background = "url(mole.jpg)";
+          element.style.position = "absolute";
+          element.style.opacity = 0.2;
+          element.style.transition = "transform 0.5s ease-in-out, opacity 0.5s ease";
+    
+          document.body.appendChild(element);
+    
+          //요소를 배치하기
+          element.style.left = SPACE + i*(W+SPACE) + "px";
+          element.style.top = 2*SPACE + j*(W+SPACE) + "px";
+    
+          molesState.set(element, {x: i, y:j, opacity: 0.2});
+    
+          element.onclick = function clickEventHandler(e){
+            var element = e.currentTarget;
+            var state = molesState.get(element);
+    
+            if(state.opacity >= 0.5){
+              document.body.removeChild(element);
+              molesState.delete(element);
+            }else{
+              document.body.innerHTML = "game over";
+              document.body.style.textAlign = "center";
+            }
+
+          };
+        }
+      }
+      return molesState;
+    }
+    
+    window.onload = function(){
+      var TIME_INTERVAL = 1500, DISPLAY_TIME = 1050;
+    
+      var molesState = makeMoles(7, 4);
+    
+       var timer = setInterval(function appearMole() {
+        //있는 두더지를 무작위로 선택한다
+        var n = Math.floor(Math.random()*molesState.size);
+        var elements = molesState.keys();
+        var count = 0;
+        for(var element of elements){
+          if( count++ == n ) break;
+        }
+    
+        var state = molesState.get(element);
+    
+        element.style.opacity = 1;
+        state.opacity = 1;
+        element.style.transform = "translateY(-10px)";
+    
+        setTimeout(function hideMole(){
+          element.style.opacity = 0.2;
+          state.opacity = 0.2;
+          element.style.transform = "translateY(0)";
+        }, DISPLAY_TIME);
+      }, TIME_INTERVAL);
+    };
+    
+  </script>
+</head>
+<body></body>
+</html>
